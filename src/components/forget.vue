@@ -159,9 +159,8 @@
           headers:headers,
         }).then(res => res.json()).then((d =>
           {
+            console.log(d);
             this.cardid=d.data[0].id;
-
-
             var password=this.ruleForm2.newpass;
             var sms=this.ruleForm2.code;
             var id=this.cardid;
@@ -169,7 +168,7 @@
             console.log(JSON.stringify(params));
             var myHeaders= new Headers();
             myHeaders.append('Content-Type','application/json');
-            fetch('https://webapi/v1/card/reset/passWord', {
+            fetch('https://api.vi-ni.com/webapi/v1/card/reset/passWord', {
               method:'post',
               mode:'cors',
               headers:myHeaders,

@@ -6,7 +6,6 @@
        <h1 v-for="(item,index) in status" :class="{active:activeindex===index}" @click="activeindex=index">{{item.name}}</h1>
      </section>
      <section v-if="row==1" class="middle">
-
        <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" class="demo-ruleForm">
          <span>手机号</span>
          <el-form-item prop="phone">
@@ -21,7 +20,6 @@
            <el-button type="primary" @click="login">登录</el-button>
          </el-form-item>
        </el-form>
-
      </section>
      <section class="middle2" v-for="q in activeT" v-else>
        <div class="bgone" v-if="q===1">
@@ -172,7 +170,8 @@ export default {
         ],
         phone:[
           { required: true, message: '请输入手机号码', trigger: 'blur' },
-          { min: 11, max: 11, message: '长度在为11个字符', trigger: 'blur' }
+          { min: 11, max: 11, message: '长度在为11个字符', trigger: 'blur' },
+           { pattern: /^1[34578]\d{9}$/, message: '手机格式不正确', trigger: 'blur'}
         ],
         idname:[
           { required: true, message: '请输入身份证号码', trigger: 'blur' },
@@ -202,9 +201,7 @@ export default {
       return this.activeI[this.I].id
     }
   },
-  created(){
-    this.checkLogin()
-  },
+  
   methods:{
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
@@ -227,42 +224,40 @@ export default {
           type: 'warning'
         });
       }
-
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
-    checkLogin(){
-      // if(!this.getCookie('session')){
-      //   this.$router.push('/');
-      // }else{
-      //   console.log(1)
-      //   // this.$router.push('/user_info');
-      // }
-    },
     login(){
-      var mobile=this.ruleForm2.phone;
-      var storeId='376';
-      var password=this.ruleForm2.pass;
-      var openId='0';
-      var params={"mobile":mobile,"storeId":storeId,"password":password,"openId":openId};
-      console.log(JSON.stringify(params));
-      var myHeaders= new Headers();
-      myHeaders.append('Content-Type','application/json');
-      fetch('https://api.vi-ni.com/webapi/v1/card/activateToken', {
-        method:'post',
-        mode:'cors',
-        headers:myHeaders,
-        body:JSON.stringify(params)
+
+       if(this.ruleForm2.phone!=undefined && this.ruleForm2.pass!=undefined && (/^1[34578]\d{9}$/.test(this.ruleForm2.phone))){
+        var mobile=this.ruleForm2.phone;
+        var storeId='376';
+        var password=this.ruleForm2.pass;
+        var openId='0';
+        var params={"mobile":mobile,"storeId":storeId,"password":password,"openId":openId};
+        console.log(JSON.stringify(params));
+        var myHeaders= new Headers();
+        myHeaders.append('Content-Type','application/json');
+        fetch('https://api.vi-ni.com/webapi/v1/card/activateToken', {
+          method:'post',
+          mode:'cors',
+          headers:myHeaders,
+          body:JSON.stringify(params)
       }).then(res => res.json()).then((d =>{
           console.log(d)
           if(d.code == '200'){
             alert('success')
           }else{
             alert('fail');
-          }
-        }
-      ))
+          }}))
+      }else{
+        this.$message({
+          message: '请填写完善信息',
+          type: 'warning'
+        });
+      }
+      
     },
     sendcode(){
       if(/^1[34578]\d{9}$/.test(this.ruleForm2.phone)){
@@ -305,7 +300,8 @@ export default {
       }
     },
     finish(){
-         var mobile=this.ruleForm2.phone;
+      if(this.ruleForm2.pass!=undefined&&this.ruleForm2.checkPass!=undefined){
+        var mobile=this.ruleForm2.phone;
          var name=this.ruleForm2.name;
          var storeId='376';
          var password=this.ruleForm2.pass;
@@ -331,6 +327,24 @@ export default {
          }
     }
   ))
+}else if(this.ruleForm2.pass=undefined && this.ruleForm2.checkPass!=''){
+  this.$message({
+          message: '请输入密码',
+          type: 'warning'
+  });
+}else if(this.ruleForm2.checkPass=undefined && this.ruleForm2.pass!=''){
+  this.$message({
+          message: '请输入确认密码',
+          type: 'warning'
+  });
+}
+else{
+  this.$message({
+          message: '请输入密码并确认密码',
+          type: 'warning'
+  });
+}
+         
 }
   }
 }
