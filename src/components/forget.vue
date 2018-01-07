@@ -144,10 +144,7 @@
             message: '请输入手机号码',
             type: 'warning'
           });
-        };
-
-
-
+        }
       },
       makesure(){
         var storeId='376';
@@ -157,8 +154,7 @@
           method: 'GET',
           mode: 'cors',
           headers:headers,
-        }).then(res => res.json()).then((d =>
-          {
+        }).then(res => res.json()).then((d =>{
             console.log(d);
             this.cardid=d.data[0].id;
             var password=this.ruleForm2.newpass;
@@ -166,15 +162,19 @@
             var id=this.cardid;
             var params={"mobile":mobile,"storeId":storeId,"mobileCode":sms,"password":password,"id":id};
             console.log(JSON.stringify(params));
-            var myHeaders= new Headers();
-            myHeaders.append('Content-Type','application/json');
+            // var myHeaders= new Headers();
+            // myHeaders.append('Content-Type','application/json');
             fetch('https://api.vi-ni.com/webapi/v1/card/reset/passWord', {
               method:'post',
               mode:'cors',
-              headers:myHeaders,
+              // headers:myHeaders,
+              headers:{
+                'content-Type':'application/json'
+              },
               body:JSON.stringify(params)
             }).then(res => res.json()).then((d =>{
                 console.log(d)
+                console.log(2)
                 if(d.code == '200'){
                   this.$message({
                     message: '密码重置成功',
